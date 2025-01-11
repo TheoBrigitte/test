@@ -10,5 +10,7 @@ inputs:
     required: false
     default: 'UTF-8'
 runs:
-  using: 'node20'
-  main: 'src/index.js'
+  using: 'composite'
+  steps:
+    - run: 'node ${{ github.action_path }}/src/index.js'
+      shell: bash
