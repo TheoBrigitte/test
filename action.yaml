@@ -1,5 +1,5 @@
-name: changelog-validator
-description: 'Validate changelog file'
+name: changelog-manager
+description: 'Manage changelog file'
 inputs:
   path:
     description: 'Path to the changelog file'
@@ -13,6 +13,14 @@ inputs:
     description: 'Encoding of the changelog file'
     required: false
     default: 'UTF-8'
+  command:
+    description: 'Command to run'
+    required: false
+    default: 'fmt'
+  release_version:
+    description: 'Release version'
+    required: false
+    default: ''
 runs:
   using: 'node20'
   main: 'src/github-action.js'
