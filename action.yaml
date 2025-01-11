@@ -16,7 +16,7 @@ inputs:
   command:
     description: 'Command to run'
     required: false
-    default: 'fmt'
+    default: 'auto'
   release_version:
     description: 'Release version'
     required: false
