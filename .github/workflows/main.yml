@@ -1,0 +1,11 @@
+on: [push]
+
+jobs:
+  validate_changelog:
+    runs-on: ubuntu-latest
+    name: Validate Changelog
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Validate Changelog
+        uses: TheoBrigitte/test@e4b2527603173e9d78d2a8469330b5900872b1c6
