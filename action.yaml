@@ -13,8 +13,8 @@ inputs:
     description: 'Encoding of the changelog file'
     required: false
     default: 'UTF-8'
-  command:
-    description: 'Command to run'
+  action:
+    description: 'Action to perform'
     required: false
     default: 'auto'
   release_version:

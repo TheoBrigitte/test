@@ -1,42 +1,59 @@
 import core from '@actions/core';
+import github from '@actions/github';
 
-import { cmd } from './main.js';
+import add from './add.js';
+import fmt from './fmt.js';
+import release from './release.js';
 
-const command = core.getInput('command');
 const options = {
   path: core.getInput('path'),
   format: core.getInput('format'),
   encoding: core.getInput('encoding')
 };
 
-const args = [
-  ...process.argv.slice(0, 2),
-  command,
-  '--path',
-  options.path,
-  '--format',
-  options.format,
-  '--encoding',
-  options.encoding
-];
+const re = /(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?/
 
-let successMessage;
-switch (command) {
-  case 'fmt':
-    successMessage = 'Changelog is valid';
-    break;
-  case 'release':
-    const version = core.getInput('release_version');
-    args.push(version);
-    successMessage = `Released version ${version}`;
-    break;
-  default:
-    throw new Error(`Unsupported command: ${command}`);
-}
-
+console.log(github.context);
 try {
-  cmd().parse(args);
-  console.log(successMessage);
+  switch (github.context.eventName) {
+    case 'push':
+      runFmt(options);
+      break;
+    case 'pull_request':
+      runPullRequest(options);
+      break;
+  }
 } catch (error) {
   core.setFailed(error.message);
+}
+
+function runFmt(options) {
+  fmt(options);
+  console.log('Changelog is valid');
+}
+
+function runPullRequest(options) {
+  const keywords = ['added', 'changed', 'deprecated', 'removed', 'fixed', 'security'];
+
+  for (const keyword of keywords) {
+    // Check if PR title contains a change type keyword
+    const title = github.context.payload.pull_request.title;
+    if (new RegExp(keyword, "i").test(title)) {
+      // Add change to changelog
+      add(title, undefined, options);
+      console.log(`Added change to changelog: ${title}`);
+      return;
+    }
+  }
+
+  // Check if PR title contains a release keyword
+  if (new RegExp('release', "i").test(title)) {
+    const [version] = title.match(re) ?? [];
+    if (version) {
+      // Add release to changelog
+      release(version, options);
+      console.log(`Added release ${version} to changelog`);
+      return;
+    }
+  }
 }
