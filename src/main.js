@@ -28,12 +28,13 @@ export function cmd() {
     .version("0.1.0")
 
   // Define commands
+  const changeTypes = Array.from(new Release().changes.keys()).join(", ");
   program
     .command("add")
     .description("Add a new change to the changelog")
     .argument("<title>", "Change title")
     .argument("[description]", "Change description", "")
-    .option("--type <type>", "Change type (allowed values: "+ new Release().changes.keys().toArray().join(', ')+")", "added")
+    .option("--type <type>", `Change type (allowed values: ${changeTypes})`, "added")
     .action(add);
 
   program
