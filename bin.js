@@ -2,6 +2,7 @@
 
 import { Command } from 'commander';
 import { fmt } from './src/fmt.js';
+import { init } from './src/init.js';
 import { mergeAction } from './src/merge.js';
 import { mergeMultiple } from './src/mergeMultiple.js';
 
@@ -27,6 +28,14 @@ program
   .description("Format changelog file")
   .argument("<file>", "Changelog file to format")
   .action(fmt);
+
+program
+  .command("init")
+  .description("Initialize a new changelog file")
+  .argument("[file]", "Changelog file to initialize", "CHANGELOG.md")
+  .option("--title <title>", "Changelog title", "Changelog")
+  .option("--description <description>", "Changelog description")
+  .action(init);
 
 // Define merge command
 program
