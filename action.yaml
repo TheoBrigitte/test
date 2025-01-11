@@ -1,0 +1,15 @@
+name: changelog-validator
+description: 'Validate changelog file'
+inputs:
+  path:
+    description: 'Path to the changelog file'
+    required: false
+    default: 'CHANGELOG.md'
+  encoding:
+    description: 'Encoding of the changelog file'
+    required: false
+    default: 'UTF-8'
+runs:
+  using: 'node20'
+  main: 'src/index.js
+
