@@ -1,4 +1,4 @@
-const core = require('@actions/core');
+import core from '@actions/core';
 
 import { parser } from "keep-a-changelog";
 import fs from "fs";
