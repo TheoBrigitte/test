@@ -14,8 +14,8 @@ class rootCommand extends Command {
     const cmd = new Command(name);
     // Add global options
     cmd.option('--format <format>', 'Changelog format', 'markdownlint');
-    cmd.option('--encoding <encoding>', 'Changelog file encoding', 'UTF-8');
-    cmd.option('--path <path>', 'Changelog file path', 'CHANGELOG.md');
+    cmd.option('--encoding <encoding>', 'Encoding format of the changelog file', 'UTF-8');
+    cmd.option('--path <path>', 'Path to changelog file', 'CHANGELOG.md');
     return cmd;
   }
 }
