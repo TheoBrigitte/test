@@ -8,4 +8,4 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
       - name: Validate Changelog
-        uses: TheoBrigitte/test@14d98be0f86e7bbf8b3ec3de3f538dae80066026
+        uses: TheoBrigitte/test@fc2f31dd73e65e04f25155020ceecf8b4ed00f1f
