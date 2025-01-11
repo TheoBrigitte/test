@@ -2,8 +2,8 @@ import core from '@actions/core';
 
 import { fmt } from './fmt.js';
 
-const changelogPath = core.getInput('path') || 'CHANGELOG.md';
-const encoding = core.getInput('encoding') || 'utf-8';
+const changelogPath = core.getInput('path');
+const encoding = core.getInput('encoding');
 
 try {
   fmt(changelogPath, { encoding });
