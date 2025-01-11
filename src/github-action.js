@@ -3,10 +3,13 @@ import core from '@actions/core';
 import { fmt } from './fmt.js';
 
 const changelogPath = core.getInput('path');
-const encoding = core.getInput('encoding');
+const options = {
+  format: core.getInput('format'),
+  encoding: core.getInput('encoding')
+};
 
 try {
-  fmt(changelogPath, { encoding });
+  fmt(changelogPath, options);
   console.log('Changelog is valid');
 } catch (error) {
   core.setFailed(error.message);

@@ -5,6 +5,10 @@ inputs:
     description: 'Path to the changelog file'
     required: false
     default: 'CHANGELOG.md'
+  format:
+    description: 'Format of the changelog file'
+    required: false
+    default: 'markdownlint'
   encoding:
     description: 'Encoding of the changelog file'
     required: false
