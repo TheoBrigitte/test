@@ -17,8 +17,12 @@ const options = {
 const semverRegex = /(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?/
 
 function runFmt(options) {
+  core.startGroup(`Validating changelog format`);
+
   fmt(options);
+
   console.log('Changelog is valid');
+  core.endGroup();
 }
 
 function runPullRequest(options) {
@@ -29,10 +33,17 @@ function runPullRequest(options) {
     // Check if PR title contains a change type keyword
     if (new RegExp(change_type, "i").test(title)) {
       // Add change to changelog
+      core.startGroup('Updating changelog');
       const change_title = `${title} [#${github.context.payload.pull_request.number}](${github.context.payload.pull_request.html_url})`;
       options.type = change_type;
+
+      console.log(`change_title: ${change_title}`);
+      console.log(`change_type: ${change_type}`);
+
       add(change_title, undefined, options);
-      console.log(`Added pull request ${github.context.payload.pull_request.number} to changelog`);
+
+      console.log(`Done`);
+      core.endGroup()
       return;
     }
   }
@@ -42,15 +53,19 @@ function runPullRequest(options) {
     const [version] = title.match(semverRegex) ?? [];
     if (version) {
       // Add release to changelog
+      core.startGroup(`Adding release ${version} to changelog`);
+
       release(version, options);
-      console.log(`Added release ${version} to changelog`);
+
+      console.log(`Done`);
       return;
     }
   }
 }
 
 async function pushChanges(options) {
-  console.log('Pushing changes');
+  core.startGroup('Pushing changes to repository');
+
   try {
     await exec.exec('git', ['diff', '--exit-code', '--output', '/dev/null', '--', options.path]);
     console.log('No changes to commit');
@@ -63,7 +78,9 @@ async function pushChanges(options) {
   await exec.exec('git', ['config', 'user.email', 'action@github.com']);
   await exec.exec('git', ['commit', '-m', 'Update changelog', options.path]);
   await exec.exec('git', ['push', 'origin', `HEAD:${github.context.payload.pull_request.head.ref}`]);
-  console.log('Pushed changes');
+
+  console.log('Done');
+  core.endGroup();
 }
 
 try {
