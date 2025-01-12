@@ -12,10 +12,6 @@ const options = {
   encoding: core.getInput('encoding')
 };
 
-// Regular expression to match a semantic version
-// source: https://semver.org/#is-there-a-suggested-regular-expression-regex-to-check-a-semver-string
-const semverRegex = /(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?/
-
 function runFmt(options) {
   core.startGroup(`Validating changelog format`);
 
@@ -25,39 +21,67 @@ function runFmt(options) {
   core.endGroup();
 }
 
-function runPullRequest(options) {
-  const change_types = ['added', 'changed', 'deprecated', 'removed', 'fixed', 'security'];
-  const title = github.context.payload.pull_request.title;
+function runAdd(change_title, change_type, options) {
+  // Add change to changelog
+  core.startGroup('Updating changelog');
+  options.type = change_type;
+
+  console.log(`change_title: ${change_title}`);
+  console.log(`change_type: ${change_type}`);
+
+  add(change_title, undefined, options);
+
+  console.log(`Done`);
+  core.endGroup()
+}
+
+function runRelease(version, options) {
+  // Add release to changelog
+  core.startGroup(`Adding release ${version} to changelog`);
+
+  release(version, options);
+
+  console.log(`Done`);
+  core.endGroup();
+}
+
+function getChangeType(title) {
+  const change_types = {
+    added: /add(s|ed|ing)?\b/i,
+    changed: /chang(e(s|d)?|ing)\b/i,
+    deprecated: /deprecat(e(s|d)?|ing)\b/i,
+    removed: /(remov|delet)(e(s|d)?|ing)\b/i,
+    security: /(security|cve)\b/i,
+    fixed: /fix\b/i,
+  };
 
   for (const change_type of change_types) {
-    // Check if PR title contains a change type keyword
-    if (new RegExp(change_type, "i").test(title)) {
-      // Add change to changelog
-      core.startGroup('Updating changelog');
-      const change_title = `${title} [#${github.context.payload.pull_request.number}](${github.context.payload.pull_request.html_url})`;
-      options.type = change_type;
-
-      console.log(`change_title: ${change_title}`);
-      console.log(`change_type: ${change_type}`);
-
-      add(change_title, undefined, options);
-
-      console.log(`Done`);
-      core.endGroup()
-      return;
+    // Check if title matches change type
+    if (change_types[change_type].test(title)) {
+      return change_type;
     }
+  }
+}
+
+function handlePullRequest(options) {
+  const title = github.context.payload.pull_request.title;
+
+  // Check if PR title contains a change type keyword
+  const change_type = getChangeType(title);
+  if (change_type) {
+    const change_title = `${title} [#${github.context.payload.pull_request.number}](${github.context.payload.pull_request.html_url})`;
+    runAdd(change_title, change_type, options);
+    return;
   }
 
   // Check if PR title contains release keyword
-  if (new RegExp('release', "i").test(title)) {
+  if (/release/i.test(title)) {
+    // Regular expression to match a semantic version
+    // https://semver.org/#is-there-a-suggested-regular-expression-regex-to-check-a-semver-string
+    const semverRegex = /(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?/
     const [version] = title.match(semverRegex) ?? [];
     if (version) {
-      // Add release to changelog
-      core.startGroup(`Adding release ${version} to changelog`);
-
-      release(version, options);
-
-      console.log(`Done`);
+      runRelease(version, options);
       return;
     }
   }
@@ -71,7 +95,7 @@ async function pushChanges(options) {
     console.log('No changes to commit');
     return;
   } catch (error) {
-    // Changes to commit
+    // Found changes to commit
   }
 
   await exec.exec('git', ['config', 'user.name', 'changelog-manager[bot]']);
@@ -89,7 +113,7 @@ try {
       runFmt(options);
       break;
     case 'pull_request':
-      runPullRequest(options);
+      handlePullRequest(options);
       pushChanges(options);
       break;
   }
