@@ -69,4 +69,5 @@ function pushChanges(options) {
   exec.exec('git', ['config', 'user.email', 'action@github.com']);
   exec.exec('git', ['commit', '-m', 'Update changelog', options.path]);
   exec.exec('git', ['push']);
+  console.log('Pushed changes');
 }
