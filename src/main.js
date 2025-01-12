@@ -40,6 +40,8 @@ export function cmd() {
   program
     .command("fmt")
     .description("Format changelog file")
+    .option("--write", "Write formatted changelog back to file")
+    .option("--silent", "Do not output formatted changelog")
     .action(fmt);
 
   program
