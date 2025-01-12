@@ -98,8 +98,8 @@ async function pushChanges(options) {
     // Found changes to commit
   }
 
-  await exec.exec('git', ['config', 'user.name', 'changelog-manager[bot]']);
-  await exec.exec('git', ['config', 'user.email', 'changelog-manager.bot@users.noreply.github.com']);
+  await exec.exec('git', ['config', 'user.name', 'github-actions[bot]']);
+  await exec.exec('git', ['config', 'user.email', '41898282+github-actions[bot]@users.noreply.github.com']);
   await exec.exec('git', ['commit', '-m', 'Update changelog', options.path]);
   await exec.exec('git', ['push', 'origin', `HEAD:${github.context.payload.pull_request.head.ref}`]);
 
