@@ -11,7 +11,9 @@ const options = {
   encoding: core.getInput('encoding')
 };
 
-const re = /(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?/
+// Regular expression to match a semantic version
+// source: https://semver.org/#is-there-a-suggested-regular-expression-regex-to-check-a-semver-string
+const semverRegex = /(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?/
 
 console.log(github.context);
 try {
@@ -33,22 +35,24 @@ function runFmt(options) {
 }
 
 function runPullRequest(options) {
-  const keywords = ['added', 'changed', 'deprecated', 'removed', 'fixed', 'security'];
+  const change_types = ['added', 'changed', 'deprecated', 'removed', 'fixed', 'security'];
+  const title = github.context.payload.pull_request.title;
 
-  for (const keyword of keywords) {
+  for (const change_type of change_types) {
     // Check if PR title contains a change type keyword
-    const title = github.context.payload.pull_request.title;
-    if (new RegExp(keyword, "i").test(title)) {
+    if (new RegExp(change_type, "i").test(title)) {
       // Add change to changelog
-      add(title, undefined, options);
-      console.log(`Added change to changelog: ${title}`);
+      const change_title = `${title} [#${github.context.payload.pull_request.number}](${github.context.payload.pull_request.url})`;
+      options.type = change_type;
+      add(change_title, undefined, options);
+      console.log(`Added pull request ${github.context.payload.pull_request.number} to changelog`);
       return;
     }
   }
 
-  // Check if PR title contains a release keyword
+  // Check if PR title contains release keyword
   if (new RegExp('release', "i").test(title)) {
-    const [version] = title.match(re) ?? [];
+    const [version] = title.match(semverRegex) ?? [];
     if (version) {
       // Add release to changelog
       release(version, options);
