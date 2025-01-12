@@ -11,4 +11,4 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
       - name: Manage changelog
-        uses: TheoBrigitte/test@93e2ac7d6c27189f7424db8267ca67ea403f9e84
+        uses: TheoBrigitte/test@e79a58abc420f6cc81403eaf75367aac754a1355
