@@ -55,7 +55,7 @@ function getChangeType(title) {
     fixed: /fix\b/i,
   };
 
-  for (const change_type of change_types) {
+  for (const change_type in change_types) {
     // Check if title matches change type
     if (change_types[change_type].test(title)) {
       return change_type;
