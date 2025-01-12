@@ -51,6 +51,12 @@ function runPullRequest(options) {
 
 async function pushChanges(options) {
   console.log('Pushing changes');
+  const ret = await exec.exec('git', ['diff', '--exit-code', '--output', '/dev/null', '--', options.path]);
+  if (ret === 0) {
+    console.log('No changes to commit');
+    return;
+  }
+
   await exec.exec('git', ['config', 'user.name', 'github-actions']);
   await exec.exec('git', ['config', 'user.email', 'action@github.com']);
   await exec.exec('git', ['commit', '-m', 'Update changelog', options.path]);
