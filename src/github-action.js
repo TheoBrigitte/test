@@ -6,14 +6,10 @@ import { add } from './add.js';
 import { fmt } from './fmt.js';
 import { release } from './release.js';
 
-const options = {
-  path: core.getInput('path'),
-  format: core.getInput('format'),
-  encoding: core.getInput('encoding')
-};
-
-function runFmt(options) {
+function runFmt(write, silent, options) {
   core.startGroup(`Validating changelog format`);
+  options.write = write;
+  options.silent = silent;
 
   fmt(options);
 
@@ -21,15 +17,16 @@ function runFmt(options) {
   core.endGroup();
 }
 
-function runAdd(change_title, change_type, options) {
+function runAdd(title, description, type, options) {
   // Add change to changelog
   core.startGroup('Updating changelog');
-  options.type = change_type;
+  options.type = type;
 
-  console.log(`change_title: ${change_title}`);
-  console.log(`change_type: ${change_type}`);
+  console.log(`title: ${title}`);
+  console.log(`description: ${description}`);
+  console.log(`type: ${type}`);
 
-  add(change_title, undefined, options);
+  add(title, description, options);
 
   console.log(`Done`);
   core.endGroup()
@@ -63,14 +60,44 @@ function getChangeType(title) {
   }
 }
 
+async function pushChanges(options) {
+  core.startGroup('Pushing changes to repository');
+
+  const message = core.getInput('commit_message');
+  const user_name = core.getInput('commit_username');
+  const user_email = core.getInput('commit_email');
+
+  const ref = github.context.ref;
+  //const ref = github.context.payload.pull_request.head.ref;
+
+  try {
+    await exec.exec('git', ['diff', '--exit-code', '--output', '/dev/null', '--', options.path]);
+    console.log('No changes to commit');
+    return;
+  } catch (error) {
+    // Found changes to commit
+  }
+
+  await exec.exec('git', ['config', 'user.name', user_name]);
+  await exec.exec('git', ['config', 'user.email', user_email]);
+  await exec.exec('git', ['commit', '-m', message, options.path]);
+  // TODO: find ref somewhere else for other events
+  await exec.exec('git', ['push', 'origin', `HEAD:${ref}`]);
+
+  console.log('Done');
+  core.endGroup();
+}
+
 function handlePullRequest(options) {
   const title = github.context.payload.pull_request.title;
+
+  // TODO: Check for PR status open or reopen
 
   // Check if PR title contains a change type keyword
   const change_type = getChangeType(title);
   if (change_type) {
     const change_title = `${title} [#${github.context.payload.pull_request.number}](${github.context.payload.pull_request.html_url})`;
-    runAdd(change_title, change_type, options);
+    runAdd(change_title, undefined, change_type, options);
     return;
   }
 
@@ -89,35 +116,43 @@ function handlePullRequest(options) {
   console.log(`No change type or release keyword found in PR title: ${title}`);
 }
 
-async function pushChanges(options) {
-  core.startGroup('Pushing changes to repository');
-
-  try {
-    await exec.exec('git', ['diff', '--exit-code', '--output', '/dev/null', '--', options.path]);
-    console.log('No changes to commit');
-    return;
-  } catch (error) {
-    // Found changes to commit
-  }
-
-  await exec.exec('git', ['config', 'user.name', 'github-actions[bot]']);
-  await exec.exec('git', ['config', 'user.email', '41898282+github-actions[bot]@users.noreply.github.com']);
-  await exec.exec('git', ['commit', '-m', 'Update changelog', options.path]);
-  await exec.exec('git', ['push', 'origin', `HEAD:${github.context.payload.pull_request.head.ref}`]);
-
-  console.log('Done');
-  core.endGroup();
-}
-
-try {
+function handleAutoAction(options) {
   switch (github.context.eventName) {
     case 'push':
-      runFmt(options);
+      runFmt(false, true, options);
       break;
     case 'pull_request':
       handlePullRequest(options);
-      pushChanges(options);
       break;
+  }
+}
+
+try {
+  const action = core.getInput('action');
+  const options = {
+    path: core.getInput('path'),
+    format: core.getInput('format'),
+    encoding: core.getInput('encoding')
+  };
+
+  switch (action) {
+    case 'auto':
+      handleAutoAction(options);
+    case 'fmt':
+      runFmt(core.getInput('fmt_write'), true, options);
+      break;
+    case 'add':
+      runAdd(core.getInput('add_title'), core.getInput('add_description'), core.getInput('add_type'), options);
+      break;
+    case 'release':
+      runRelease(core.getInput('release_version'), options);
+      break;
+    default:
+      core.setFailed(`Invalid action: ${action}`);
+  }
+
+  if (core.getInput('commit')) {
+    pushChanges(options);
   }
 } catch (error) {
   core.setFailed(error.message);

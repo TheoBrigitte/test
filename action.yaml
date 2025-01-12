@@ -17,10 +17,42 @@ inputs:
     description: 'Action to perform'
     required: false
     default: 'auto'
+  add_title:
+    description: 'New change title'
+    required: false
+    default: ''
+  add_description:
+    description: 'New change description'
+    required: false
+    default: ''
+  add_type:
+    description: 'New change type'
+    required: false
+    default: ''
+  fmt_write:
+    description: 'Write formatted changelog back to file'
+    required: false
+    default: 'false'
   release_version:
     description: 'Release version'
     required: false
     default: ''
+  commit_message:
+    description: 'Commit message'
+    required: false
+    default: 'Update changelog'
+  commit_username:
+    description: 'Commit username'
+    required: false
+    default: 'github-actions[bot]'
+  commit_useremail:
+    description: 'Commit user email'
+    required: false
+    default: '41898282+github-actions[bot]@users.noreply.github.com'
+  commit:
+    description: 'Commit and push changes'
+    required: false
+    default: 'true'
 runs:
   using: 'node20'
   main: 'src/github-action.js'
