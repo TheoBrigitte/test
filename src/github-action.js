@@ -29,7 +29,7 @@ function runPullRequest(options) {
     // Check if PR title contains a change type keyword
     if (new RegExp(change_type, "i").test(title)) {
       // Add change to changelog
-      const change_title = `${title} [#${github.context.payload.pull_request.number}](${github.context.payload.pull_request.url})`;
+      const change_title = `${title} [#${github.context.payload.pull_request.number}](${github.context.payload.pull_request.html_url})`;
       options.type = change_type;
       add(change_title, undefined, options);
       console.log(`Added pull request ${github.context.payload.pull_request.number} to changelog`);

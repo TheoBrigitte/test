@@ -10,7 +10,7 @@ jobs:
     steps:
       - name: Checkout code
         with:
-          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.sha }}
         uses: actions/checkout@v4
       - name: Manage changelog
         uses: TheoBrigitte/test@a81667f9cbbaf65b29c7130f68baf38ae010dab7
