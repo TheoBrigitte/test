@@ -64,10 +64,11 @@ function runPullRequest(options) {
   }
 }
 
-function pushChanges(options) {
-  exec.exec('git', ['config', 'user.name', 'github-actions']);
-  exec.exec('git', ['config', 'user.email', 'action@github.com']);
-  exec.exec('git', ['commit', '-m', 'Update changelog', options.path]);
-  exec.exec('git', ['push']);
+async function pushChanges(options) {
+  console.log('Pushing changes');
+  await exec.exec('git', ['config', 'user.name', 'github-actions']);
+  await exec.exec('git', ['config', 'user.email', 'action@github.com']);
+  await exec.exec('git', ['commit', '-m', 'Update changelog', options.path]);
+  await exec.exec('git', ['push']);
   console.log('Pushed changes');
 }
