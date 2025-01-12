@@ -67,6 +67,7 @@ async function pushChanges(options) {
   const user_name = core.getInput('commit_username');
   const user_email = core.getInput('commit_email');
 
+  console.log(process.env);
   const ref = process.env.GITHUB_REF;
   //const ref = github.context.payload.pull_request.head.ref;
 
