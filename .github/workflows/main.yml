@@ -9,6 +9,8 @@ jobs:
     name: Manage changelog
     steps:
       - name: Checkout code
+        with:
+          fetch-depth: 0
         uses: actions/checkout@v4
       - name: Manage changelog
         uses: TheoBrigitte/test@ed1b4681104da801b010599a9386a3890afca64d
