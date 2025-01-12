@@ -24,7 +24,7 @@ try {
       break;
     case 'pull_request':
       runPullRequest(options);
-      pushChanges();
+      pushChanges(options);
       break;
   }
 } catch (error) {
