@@ -13,4 +13,4 @@ jobs:
           fetch-depth: 0
         uses: actions/checkout@v4
       - name: Manage changelog
-        uses: TheoBrigitte/test@ed1b4681104da801b010599a9386a3890afca64d
+        uses: TheoBrigitte/test@a81667f9cbbaf65b29c7130f68baf38ae010dab7
