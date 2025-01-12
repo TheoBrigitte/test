@@ -4,11 +4,11 @@ on:
     types: [opened, reopened]
 
 jobs:
-  validate_changelog:
+  manage_changelog:
     runs-on: ubuntu-latest
     name: Manage changelog
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-      - name: Validate Changelog
+      - name: Manage changelog
         uses: TheoBrigitte/test@578ee060302face49690998bc2f5cad8c2e5b59b
