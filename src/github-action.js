@@ -58,18 +58,16 @@ async function pushChanges(options) {
   console.log('Pushed changes');
 }
 
-( async function main() {
-  try {
-    switch (github.context.eventName) {
-      case 'push':
-        runFmt(options);
-        break;
-      case 'pull_request':
-        runPullRequest(options);
-        pushChanges(options);
-        break;
-    }
-  } catch (error) {
-    core.setFailed(error.message);
+try {
+  switch (github.context.eventName) {
+    case 'push':
+      runFmt(options);
+      break;
+    case 'pull_request':
+      runPullRequest(options);
+      pushChanges(options);
+      break;
   }
-})();
+} catch (error) {
+  core.setFailed(error.message);
+}
