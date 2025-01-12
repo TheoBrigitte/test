@@ -3,7 +3,7 @@ on: [push, pull_request]
 jobs:
   validate_changelog:
     runs-on: ubuntu-latest
-    name: Validate Changelog
+    name: Manage changelog
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
