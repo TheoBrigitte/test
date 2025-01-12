@@ -54,7 +54,7 @@ async function pushChanges(options) {
   await exec.exec('git', ['config', 'user.name', 'github-actions']);
   await exec.exec('git', ['config', 'user.email', 'action@github.com']);
   await exec.exec('git', ['commit', '-m', 'Update changelog', options.path]);
-  await exec.exec('git', ['push']);
+  await exec.exec('git', ['push', 'origin', `HEAD:${github.context.payload.head.ref}`]);
   console.log('Pushed changes');
 }
 
