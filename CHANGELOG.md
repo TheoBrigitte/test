@@ -29,6 +29,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Trademark sign previously shown after the project description in version
   0.3.0
 
+### Fixed
+
+- Fix test [#26](https://github.com/TheoBrigitte/test/pull/26)
+
 ## [1.1.1] - 2023-03-05
 
 ### Added
