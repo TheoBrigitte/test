@@ -1,5 +1,6 @@
 import core from '@actions/core';
 import github from '@actions/github';
+import exec from '@actions/exec';
 
 import { add } from './add.js';
 import { fmt } from './fmt.js';
@@ -23,6 +24,7 @@ try {
       break;
     case 'pull_request':
       runPullRequest(options);
+      pushChanges();
       break;
   }
 } catch (error) {
@@ -60,4 +62,11 @@ function runPullRequest(options) {
       return;
     }
   }
+}
+
+function pushChanges(options) {
+  exec.exec('git', ['config', 'user.name', 'github-actions']);
+  exec.exec('git', ['config', 'user.email', 'action@github.com']);
+  exec.exec('git', ['commit', '-m', 'Update changelog', options.path]);
+  exec.exec('git', ['push']);
 }
