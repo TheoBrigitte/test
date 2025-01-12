@@ -16,21 +16,6 @@ const options = {
 // source: https://semver.org/#is-there-a-suggested-regular-expression-regex-to-check-a-semver-string
 const semverRegex = /(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?/
 
-console.log(github.context);
-try {
-  switch (github.context.eventName) {
-    case 'push':
-      runFmt(options);
-      break;
-    case 'pull_request':
-      runPullRequest(options);
-      pushChanges(options);
-      break;
-  }
-} catch (error) {
-  core.setFailed(error.message);
-}
-
 function runFmt(options) {
   fmt(options);
   console.log('Changelog is valid');
@@ -72,3 +57,19 @@ async function pushChanges(options) {
   await exec.exec('git', ['push']);
   console.log('Pushed changes');
 }
+
+( async function main() {
+  try {
+    switch (github.context.eventName) {
+      case 'push':
+        runFmt(options);
+        break;
+      case 'pull_request':
+        runPullRequest(options);
+        pushChanges(options);
+        break;
+    }
+  } catch (error) {
+    core.setFailed(error.message);
+  }
+})();
