@@ -1,9 +1,9 @@
 import core from '@actions/core';
 import github from '@actions/github';
 
-import add from './add.js';
-import fmt from './fmt.js';
-import release from './release.js';
+import { add } from './add.js';
+import { fmt } from './fmt.js';
+import { release } from './release.js';
 
 const options = {
   path: core.getInput('path'),
