@@ -85,6 +85,8 @@ function handlePullRequest(options) {
       return;
     }
   }
+
+  console.log(`No change type or release keyword found in PR title: ${title}`);
 }
 
 async function pushChanges(options) {
