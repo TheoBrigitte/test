@@ -1,0 +1,16 @@
+on:
+  push:
+  pull_request:
+    types: [opened, reopened]
+
+jobs:
+  manage_changelog:
+    runs-on: ubuntu-latest
+    name: Manage changelog
+    steps:
+      - name: Checkout code
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+        uses: actions/checkout@v4
+      - name: Manage changelog
+        uses: TheoBrigitte/test@9cf41cc6e3051702f51b029af7477eb58fed31bb
