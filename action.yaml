@@ -3,44 +3,44 @@ description: 'Manage changelog file'
 inputs:
   path:
     description: 'Path to the changelog file'
-    required: false
     default: 'CHANGELOG.md'
-  format:
-    description: 'Format of the changelog file'
     required: false
+  format:
+    description: 'Format of the changelog file (markdownlint or compact)'
     default: 'markdownlint'
+    required: false
   encoding:
     description: 'Encoding of the changelog file'
-    required: false
     default: 'UTF-8'
+    required: false
   action:
     description: 'Action to perform'
+    default: 'fmt'
     required: false
-    default: 'auto'
   fmt_write:
-    description: 'Write formatted changelog back to file'
-    required: false
+    description: '(action=fmt) Write formatted changelog back to file'
     default: 'false'
-  release_version:
-    description: 'Release version'
     required: false
+  release_version:
+    description: '(action=release) Release version'
     default: ''
+    required: false
+  commit:
+    description: 'Commit and push changes into the repository'
+    default: 'true'
+    required: false
   commit_message:
     description: 'Commit message'
-    required: false
     default: 'Update changelog'
+    required: false
   commit_username:
     description: 'Commit username'
-    required: false
     default: 'github-actions[bot]'
-  commit_useremail:
+    required: false
+  commit_user_email:
     description: 'Commit user email'
-    required: false
     default: '41898282+github-actions[bot]@users.noreply.github.com'
-  commit:
-    description: 'Commit and push changes'
     required: false
-    default: 'true'
 runs:
   using: 'node20'
   main: 'src/github-action.js'

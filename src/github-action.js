@@ -7,10 +7,10 @@ import { fmt } from './fmt.js';
 import { release } from './release.js';
 
 // Parse and format changelog file
-function runFmt(write, silent, options) {
+function runFmt(write, options) {
   core.startGroup(`Validating changelog format`);
   options.write = write;
-  options.silent = silent;
+  options.silent = true;
 
   fmt(options);
 
@@ -68,7 +68,7 @@ async function pushChanges(options) {
 
   const message = core.getInput('commit_message');
   const user_name = core.getInput('commit_username');
-  const user_email = core.getInput('commit_email');
+  const user_email = core.getInput('commit_user_email');
 
   console.log(process.env);
   const ref = github.context.payload.pull_request?.head.ref || github.context.payload.push?.base_ref;
@@ -123,7 +123,7 @@ function handleAutoAction(options) {
   switch (github.context.eventName) {
     case 'push':
       // Only parse changelog file
-      runFmt(false, true, options);
+      runFmt(false, options);
       break;
     case 'pull_request':
       handlePullRequest(options);
@@ -144,7 +144,7 @@ try {
       handleAutoAction(options);
       break;
     case 'fmt':
-      runFmt(core.getInput('fmt_write'), true, options);
+      runFmt(core.getInput('fmt_write'), options);
       break;
     case 'release':
       runRelease(core.getInput('release_version'), options);
@@ -154,7 +154,7 @@ try {
       break;
   }
 
-  if (core.getInput('commit')) {
+  if (core.getBooleanInput('commit')) {
     pushChanges(options);
   }
 } catch (error) {
