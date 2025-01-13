@@ -8,8 +8,8 @@ export function merge(source, options) {
   const fromRelease = s[1]?.replace(/^v/, "");
 
   // Read and parse changelog files
-  const sourceChangelog = parser(fs.readFileSync(sourceFile, "UTF-8"));
-  const destinationChangelog = parser(fs.readFileSync(options.path, "UTF-8"));
+  const sourceChangelog = parser(fs.readFileSync(sourceFile, options.encoding));
+  const destinationChangelog = parser(fs.readFileSync(options.file, options.encoding));
 
   // Set format
   sourceChangelog.format = options.format;
