@@ -16,4 +16,4 @@ jobs:
         uses: TheoBrigitte/test@2e8f73abdee0d6f7ad55f20206d985851032cb22
         with:
           action: release
-          release_version: '1.0.0'
+          release_version: '1.2.0'
