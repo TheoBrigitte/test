@@ -41,7 +41,7 @@ export function merge(source, options) {
   });
 
   // Write changes to destination changelog
-  fs.writeFileSync(options.path, destinationChangelog.toString());
+  fs.writeFileSync(options.file, destinationChangelog.toString());
 }
 
 // Get all changes from source changelog from a specific release up to the latest release

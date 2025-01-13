@@ -14,7 +14,7 @@ export function cmd() {
       // Add global options
       cmd.option('--format <format>', 'Changelog format', 'markdownlint');
       cmd.option('--encoding <encoding>', 'Encoding format of the changelog file', 'UTF-8');
-      cmd.option('--path <path>', 'Path to changelog file', 'CHANGELOG.md');
+      cmd.option('-f, --file <path>', 'Path to changelog file', 'CHANGELOG.md');
       return cmd;
     }
   }

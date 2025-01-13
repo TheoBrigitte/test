@@ -77,7 +77,7 @@ async function pushChanges(options) {
   }
 
   try {
-    await exec.exec('git', ['diff', '--exit-code', '--output', '/dev/null', '--', options.path]);
+    await exec.exec('git', ['diff', '--exit-code', '--output', '/dev/null', '--', options.file]);
     console.log('No changes to commit');
     return;
   } catch (error) {
@@ -86,7 +86,7 @@ async function pushChanges(options) {
 
   await exec.exec('git', ['config', 'user.name', user_name]);
   await exec.exec('git', ['config', 'user.email', user_email]);
-  await exec.exec('git', ['commit', '-m', message, options.path]);
+  await exec.exec('git', ['commit', '-m', message, options.file]);
   await exec.exec('git', ['push', 'origin', `HEAD:${ref}`]);
 
   console.log('Done');
@@ -134,7 +134,7 @@ function handleAutoAction(options) {
 try {
   const action = core.getInput('action');
   const options = {
-    path: core.getInput('path'),
+    file: core.getInput('file'),
     format: core.getInput('format'),
     encoding: core.getInput('encoding')
   };

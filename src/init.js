@@ -16,5 +16,5 @@ export function init(options) {
   // Add unreleased changes
   changelog.addRelease(new Release());
 
-  fs.writeFileSync(options.path, changelog.toString(), { encoding: options.encoding });
+  fs.writeFileSync(options.file, changelog.toString(), { encoding: options.encoding });
 }
