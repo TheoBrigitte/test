@@ -14,3 +14,5 @@ jobs:
         uses: actions/checkout@v4
       - name: Manage changelog
         uses: TheoBrigitte/test@2e8f73abdee0d6f7ad55f20206d985851032cb22
+        with:
+          fmt_write: true
