@@ -1,8 +1,8 @@
 name: changelog-manager
 description: 'Manage changelog file'
 inputs:
-  path:
-    description: 'Path to the changelog file'
+  file:
+    description: 'Changelog file path'
     default: 'CHANGELOG.md'
     required: false
   format:
