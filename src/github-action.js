@@ -122,8 +122,7 @@ function handlePullRequest(options) {
 function handleAutoAction(options) {
   switch (github.context.eventName) {
     case "push":
-      // Only parse changelog file
-      runFmt(false, options);
+      runFmt(core.getBooleanInput("fmt_write"), options);
       break;
     case "pull_request":
       handlePullRequest(options);
