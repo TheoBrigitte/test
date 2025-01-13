@@ -19,7 +19,7 @@ inputs:
     required: false
   fmt_write:
     description: '(action=fmt) Write formatted changelog back to file'
-    default: 'false'
+    default: false
     required: false
   release_version:
     description: '(action=release) Release version'
