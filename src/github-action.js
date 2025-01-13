@@ -1,10 +1,10 @@
-import core from '@actions/core';
-import github from '@actions/github';
-import exec from '@actions/exec';
+import core from "@actions/core";
+import github from "@actions/github";
+import exec from "@actions/exec";
 
-import { add } from './add.js';
-import { fmt } from './fmt.js';
-import { release } from './release.js';
+import { add } from "./add.js";
+import { fmt } from "./fmt.js";
+import { release } from "./release.js";
 
 // Parse and format changelog file
 function runFmt(write, options) {
@@ -14,13 +14,13 @@ function runFmt(write, options) {
 
   fmt(options);
 
-  console.log('Changelog is valid');
+  console.log("Changelog is valid");
   core.endGroup();
 }
 
 // Adds a new change to changelog
 function runAdd(title, description, type, options) {
-  core.startGroup('Updating changelog');
+  core.startGroup("Updating changelog");
   options.type = type;
 
   console.log(`title: ${title}`);
@@ -64,32 +64,32 @@ function getChangeType(title) {
 
 // Commit and push changes to repository
 async function pushChanges(options) {
-  core.startGroup('Pushing changes to repository');
+  core.startGroup("Pushing changes to repository");
 
-  const message = core.getInput('commit_message');
-  const user_name = core.getInput('commit_username');
-  const user_email = core.getInput('commit_user_email');
+  const message = core.getInput("commit_message");
+  const user_name = core.getInput("commit_username");
+  const user_email = core.getInput("commit_user_email");
 
   console.log(process.env);
   const ref = github.context.payload.pull_request?.head.ref || github.context.payload.push?.base_ref;
   if (!ref) {
-    throw new Error('No ref found');
+    throw new Error("No ref found");
   }
 
   try {
-    await exec.exec('git', ['diff', '--exit-code', '--output', '/dev/null', '--', options.file]);
-    console.log('No changes to commit');
+    await exec.exec("git", ["diff", "--exit-code", "--output", "/dev/null", "--", options.file]);
+    console.log("No changes to commit");
     return;
   } catch (error) {
     // Found changes to commit
   }
 
-  await exec.exec('git', ['config', 'user.name', user_name]);
-  await exec.exec('git', ['config', 'user.email', user_email]);
-  await exec.exec('git', ['commit', '-m', message, options.file]);
-  await exec.exec('git', ['push', 'origin', `HEAD:${ref}`]);
+  await exec.exec("git", ["config", "user.name", user_name]);
+  await exec.exec("git", ["config", "user.email", user_email]);
+  await exec.exec("git", ["commit", "-m", message, options.file]);
+  await exec.exec("git", ["push", "origin", `HEAD:${ref}`]);
 
-  console.log('Done');
+  console.log("Done");
   core.endGroup();
 }
 
@@ -121,40 +121,40 @@ function handlePullRequest(options) {
 
 function handleAutoAction(options) {
   switch (github.context.eventName) {
-    case 'push':
+    case "push":
       // Only parse changelog file
       runFmt(false, options);
       break;
-    case 'pull_request':
+    case "pull_request":
       handlePullRequest(options);
       break;
   }
 }
 
 try {
-  const action = core.getInput('action');
+  const action = core.getInput("action");
   const options = {
-    file: core.getInput('file'),
-    format: core.getInput('format'),
-    encoding: core.getInput('encoding')
+    file: core.getInput("file"),
+    format: core.getInput("format"),
+    encoding: core.getInput("encoding")
   };
 
   switch (action) {
-    case 'auto':
+    case "auto":
       handleAutoAction(options);
       break;
-    case 'fmt':
-      runFmt(core.getInput('fmt_write'), options);
+    case "fmt":
+      runFmt(core.getInput("fmt_write"), options);
       break;
-    case 'release':
-      runRelease(core.getInput('release_version'), options);
+    case "release":
+      runRelease(core.getInput("release_version"), options);
       break;
     default:
       core.setFailed(`Invalid action: ${action}`);
       break;
   }
 
-  if (core.getBooleanInput('commit')) {
+  if (core.getBooleanInput("commit")) {
     pushChanges(options);
   }
 } catch (error) {

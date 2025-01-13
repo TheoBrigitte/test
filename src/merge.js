@@ -1,9 +1,21 @@
 import { parser } from "keep-a-changelog";
 import fs from "fs";
 
+// Merge multiple source changelog files into a changelog unreleased changes
+export function mergeMultiple(sources, options) {
+  sources.forEach((source) => {
+    try {
+      merge(source, options);
+      console.log(`Merged ${source}`);
+    } catch (error) {
+      console.error(`Failed ${source}: ${error.message}`);
+    }
+  });
+}
+
 // Merges changes from source changelog into changelog's unreleased changes.
 export function merge(source, options) {
-  const s = source.split('@');
+  const s = source.split("@");
   const sourceFile = s[0];
   const fromRelease = s[1]?.replace(/^v/, "");
 
