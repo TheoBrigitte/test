@@ -144,7 +144,7 @@ try {
       handleAutoAction(options);
       break;
     case "fmt":
-      runFmt(core.getInput("fmt_write"), options);
+      runFmt(core.getBooleanInput("fmt_write"), options);
       break;
     case "release":
       runRelease(core.getInput("release_version"), options);
