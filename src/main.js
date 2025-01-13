@@ -12,9 +12,9 @@ export function cmd() {
     createCommand(name) {
       const cmd = new Command(name);
       // Add global options
-      cmd.option('--format <format>', 'Changelog format', 'markdownlint');
-      cmd.option('--encoding <encoding>', 'Encoding format of the changelog file', 'UTF-8');
       cmd.option('-f, --file <path>', 'Path to changelog file', 'CHANGELOG.md');
+      cmd.option('--format <format>', 'Changelog format (markdownlint or compact)', 'markdownlint');
+      cmd.option('--encoding <encoding>', 'Encoding format of the changelog file', 'UTF-8');
       return cmd;
     }
   }
@@ -56,8 +56,7 @@ export function cmd() {
   program
     .command("merge")
     .description("Merge changes from source changelog into unreleased changes")
-    .argument("<source>", "Source changelog file. Can contain a version to merge from, e.g. source@1.0.0, if not specified, latest release will be used")
-    .option("--from-release <version>", "Merge changes from a specific release version up to the latest release")
+    .argument("<source>", "Source changelog file. Can contain a version to start merging from until latest release, e.g. source@1.0.0, if not specified, only latest release will be used")
     .action(merge);
 
   program
