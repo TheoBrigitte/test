@@ -1,25 +1,26 @@
-import core from '@actions/core';
-import github from '@actions/github';
-import exec from '@actions/exec';
+import core from "@actions/core";
+import github from "@actions/github";
+import exec from "@actions/exec";
 
-import { add } from './add.js';
-import { fmt } from './fmt.js';
-import { release } from './release.js';
+import { add } from "./add.js";
+import { fmt } from "./fmt.js";
+import { release } from "./release.js";
 
-function runFmt(write, silent, options) {
+// Parse and format changelog file
+function runFmt(write, options) {
   core.startGroup(`Validating changelog format`);
   options.write = write;
-  options.silent = silent;
+  options.silent = true;
 
   fmt(options);
 
-  console.log('Changelog is valid');
+  console.log("Changelog is valid");
   core.endGroup();
 }
 
+// Adds a new change to changelog
 function runAdd(title, description, type, options) {
-  // Add change to changelog
-  core.startGroup('Updating changelog');
+  core.startGroup("Updating changelog");
   options.type = type;
 
   console.log(`title: ${title}`);
@@ -32,8 +33,8 @@ function runAdd(title, description, type, options) {
   core.endGroup()
 }
 
+// Create a new release
 function runRelease(version, options) {
-  // Add release to changelog
   core.startGroup(`Adding release ${version} to changelog`);
 
   release(version, options);
@@ -42,6 +43,7 @@ function runRelease(version, options) {
   core.endGroup();
 }
 
+// Match change type keyword in title and return change type
 function getChangeType(title) {
   const change_types = {
     added: /add(s|ed|ing)?\b/i,
@@ -60,39 +62,39 @@ function getChangeType(title) {
   }
 }
 
+// Commit and push changes to repository
 async function pushChanges(options) {
-  core.startGroup('Pushing changes to repository');
+  core.startGroup("Pushing changes to repository");
 
-  const message = core.getInput('commit_message');
-  const user_name = core.getInput('commit_username');
-  const user_email = core.getInput('commit_email');
+  const message = core.getInput("commit_message");
+  const user_name = core.getInput("commit_username");
+  const user_email = core.getInput("commit_user_email");
 
   console.log(process.env);
-  const ref = process.env.GITHUB_REF;
-  //const ref = github.context.payload.pull_request.head.ref;
+  const ref = github.context.payload.pull_request?.head.ref || github.context.payload.push?.base_ref;
+  if (!ref) {
+    throw new Error("No ref found");
+  }
 
   try {
-    await exec.exec('git', ['diff', '--exit-code', '--output', '/dev/null', '--', options.path]);
-    console.log('No changes to commit');
+    await exec.exec("git", ["diff", "--exit-code", "--output", "/dev/null", "--", options.file]);
+    console.log("No changes to commit");
     return;
   } catch (error) {
     // Found changes to commit
   }
 
-  await exec.exec('git', ['config', 'user.name', user_name]);
-  await exec.exec('git', ['config', 'user.email', user_email]);
-  await exec.exec('git', ['commit', '-m', message, options.path]);
-  // TODO: find ref somewhere else for other events
-  await exec.exec('git', ['push', 'origin', `HEAD:${ref}`]);
+  await exec.exec("git", ["config", "user.name", user_name]);
+  await exec.exec("git", ["config", "user.email", user_email]);
+  await exec.exec("git", ["commit", "-m", message, options.file]);
+  await exec.exec("git", ["push", "origin", `HEAD:${ref}`]);
 
-  console.log('Done');
+  console.log("Done");
   core.endGroup();
 }
 
 function handlePullRequest(options) {
   const title = github.context.payload.pull_request.title;
-
-  // TODO: Check for PR status open or reopen
 
   // Check if PR title contains a change type keyword
   const change_type = getChangeType(title);
@@ -119,40 +121,40 @@ function handlePullRequest(options) {
 
 function handleAutoAction(options) {
   switch (github.context.eventName) {
-    case 'push':
-      runFmt(false, true, options);
+    case "push":
+      // Only parse changelog file
+      runFmt(false, options);
       break;
-    case 'pull_request':
+    case "pull_request":
       handlePullRequest(options);
       break;
   }
 }
 
 try {
-  const action = core.getInput('action');
+  const action = core.getInput("action");
   const options = {
-    path: core.getInput('path'),
-    format: core.getInput('format'),
-    encoding: core.getInput('encoding')
+    file: core.getInput("file"),
+    format: core.getInput("format"),
+    encoding: core.getInput("encoding")
   };
 
   switch (action) {
-    case 'auto':
+    case "auto":
       handleAutoAction(options);
-    case 'fmt':
-      runFmt(core.getInput('fmt_write'), true, options);
       break;
-    case 'add':
-      runAdd(core.getInput('add_title'), core.getInput('add_description'), core.getInput('add_type'), options);
+    case "fmt":
+      runFmt(core.getInput("fmt_write"), options);
       break;
-    case 'release':
-      runRelease(core.getInput('release_version'), options);
+    case "release":
+      runRelease(core.getInput("release_version"), options);
       break;
     default:
       core.setFailed(`Invalid action: ${action}`);
+      break;
   }
 
-  if (core.getInput('commit')) {
+  if (core.getBooleanInput("commit")) {
     pushChanges(options);
   }
 } catch (error) {

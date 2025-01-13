@@ -1,15 +1,27 @@
 import { parser } from "keep-a-changelog";
 import fs from "fs";
 
+// Merge multiple source changelog files into a changelog unreleased changes
+export function mergeMultiple(sources, options) {
+  sources.forEach((source) => {
+    try {
+      merge(source, options);
+      console.log(`Merged ${source}`);
+    } catch (error) {
+      console.error(`Failed ${source}: ${error.message}`);
+    }
+  });
+}
+
 // Merges changes from source changelog into changelog's unreleased changes.
 export function merge(source, options) {
-  const s = source.split('@');
+  const s = source.split("@");
   const sourceFile = s[0];
-  const fromRelease = s[1];
+  const fromRelease = s[1]?.replace(/^v/, "");
 
   // Read and parse changelog files
-  const sourceChangelog = parser(fs.readFileSync(sourceFile, "UTF-8"));
-  const destinationChangelog = parser(fs.readFileSync(options.path, "UTF-8"));
+  const sourceChangelog = parser(fs.readFileSync(sourceFile, options.encoding));
+  const destinationChangelog = parser(fs.readFileSync(options.file, options.encoding));
 
   // Set format
   sourceChangelog.format = options.format;
@@ -41,7 +53,7 @@ export function merge(source, options) {
   });
 
   // Write changes to destination changelog
-  fs.writeFileSync(options.path, destinationChangelog.toString());
+  fs.writeFileSync(options.file, destinationChangelog.toString());
 }
 
 // Get all changes from source changelog from a specific release up to the latest release

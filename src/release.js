@@ -2,7 +2,7 @@ import { parser, Release } from "keep-a-changelog";
 import fs from "fs";
 
 export function release(version, options) {
-  const changelog = parser(fs.readFileSync(options.path, options.encoding));
+  const changelog = parser(fs.readFileSync(options.file, options.encoding));
   changelog.format = options.format;
 
   const exists = changelog.findRelease(version);
@@ -20,5 +20,5 @@ export function release(version, options) {
 
   changelog.addRelease(new Release());
 
-  fs.writeFileSync(options.path, changelog.toString());
+  fs.writeFileSync(options.file, changelog.toString());
 }

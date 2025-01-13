@@ -4,12 +4,12 @@ import fs from "fs";
 // Format changelog file
 export function fmt(options) {
   // Parse changelog file
-  const changelog = parser(fs.readFileSync(options.path, options.encoding));
+  const changelog = parser(fs.readFileSync(options.file, options.encoding));
   changelog.format = options.format;
 
   if (options.write) {
     // Write parsed changelog back to file
-    fs.writeFileSync(options.path, changelog.toString());
+    fs.writeFileSync(options.file, changelog.toString());
     return;
   }
 

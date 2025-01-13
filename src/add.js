@@ -4,7 +4,7 @@ import fs from "fs";
 // Add a new change to the changelog
 export function add(title, description, options) {
   // Parse changelog file
-  const changelog = parser(fs.readFileSync(options.path, options.encoding));
+  const changelog = parser(fs.readFileSync(options.file, options.encoding));
   changelog.format = options.format;
 
   // Find or create unreleased changes
@@ -19,5 +19,5 @@ export function add(title, description, options) {
   unreleased.addChange(options.type, newChange);
 
   // Save changes to file
-  fs.writeFileSync(options.path, changelog.toString());
+  fs.writeFileSync(options.file, changelog.toString());
 }
