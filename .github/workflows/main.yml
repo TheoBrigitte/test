@@ -13,4 +13,4 @@ jobs:
           ref: ${{ github.event.pull_request.head.sha }}
         uses: actions/checkout@v4
       - name: Manage changelog
-        uses: TheoBrigitte/test@def6048ab62a478506cfa5a2efd1c7789b9ff827
+        uses: TheoBrigitte/test@e1ddef69ef13ec99e2b732f84ef454e8345840e6
