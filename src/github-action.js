@@ -71,7 +71,7 @@ async function pushChanges(options) {
   const user_email = core.getInput("commit_user_email");
 
   console.log(github.context);
-  const ref = github.context.payload.pull_request?.head.ref || github.context.payload.push?.base_ref;
+  const ref = github.context.payload.pull_request?.head.ref || github.context.payload.ref;
   if (!ref) {
     throw new Error("No ref found");
   }
