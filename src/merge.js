@@ -5,7 +5,7 @@ import fs from "fs";
 export function merge(source, options) {
   const s = source.split('@');
   const sourceFile = s[0];
-  const fromRelease = s[1];
+  const fromRelease = s[1]?.replace(/^v/, "");
 
   // Read and parse changelog files
   const sourceChangelog = parser(fs.readFileSync(sourceFile, "UTF-8"));
