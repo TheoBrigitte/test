@@ -34,14 +34,14 @@ export function cmd() {
     .description("Add a new change to the changelog")
     .argument("<title>", "Change title")
     .argument("[description]", "Change description", "")
-    .option("--type <type>", `Change type (allowed values: ${changeTypes})`, "added")
+    .option("-t, --type <type>", `Change type (allowed values: ${changeTypes})`, "added")
     .action(add);
 
   program
     .command("fmt")
     .description("Format changelog file")
-    .option("--write", "Write formatted changelog back to file")
-    .option("--silent", "Do not output formatted changelog")
+    .option("-w, --write", "Write formatted changelog back to file")
+    .option("-s, --silent", "Do not output formatted changelog")
     .action(fmt);
 
   program
