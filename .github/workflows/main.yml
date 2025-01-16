@@ -7,10 +7,16 @@ jobs:
   manage_changelog:
     runs-on: ubuntu-latest
     name: Manage changelog
+    permissions:
+      # Give the default GITHUB_TOKEN write permission to commit and push the
+      # added or changed files to the repository.
+      contents: write
     steps:
-      - name: Checkout code
+      - uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.pull_request.head.sha }}
-        uses: actions/checkout@v4
+          ref: ${{ github.head_ref }}
       - name: Manage changelog
         uses: TheoBrigitte/test@81a705746b37aa3806b8886a69b5867fe62a4294
+        with:
+          commit: false
+      - uses: stefanzweifel/git-auto-commit-action@v5
