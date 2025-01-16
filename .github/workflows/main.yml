@@ -18,6 +18,5 @@ jobs:
       - name: Manage changelog
         uses: TheoBrigitte/test@81a705746b37aa3806b8886a69b5867fe62a4294
         with:
-          commit: false
           fmt_write: true
       - uses: stefanzweifel/git-auto-commit-action@v5

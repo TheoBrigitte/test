@@ -25,22 +25,6 @@ inputs:
     description: '(action=release) Release version'
     default: ''
     required: false
-  commit:
-    description: 'Commit and push changes into the repository'
-    default: 'true'
-    required: false
-  commit_message:
-    description: 'Commit message'
-    default: 'Update changelog'
-    required: false
-  commit_username:
-    description: 'Commit username'
-    default: 'github-actions[bot]'
-    required: false
-  commit_user_email:
-    description: 'Commit user email'
-    default: '41898282+github-actions[bot]@users.noreply.github.com'
-    required: false
 runs:
   using: 'node20'
   main: 'src/github-action.js'

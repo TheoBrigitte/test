@@ -1,6 +1,5 @@
 import core from "@actions/core";
 import github from "@actions/github";
-import exec from "@actions/exec";
 
 import { add } from "./add.js";
 import { fmt } from "./fmt.js";
@@ -62,37 +61,6 @@ function getChangeType(title) {
   }
 }
 
-// Commit and push changes to repository
-async function pushChanges(options) {
-  core.startGroup("Pushing changes to repository");
-
-  const message = core.getInput("commit_message");
-  const user_name = core.getInput("commit_username");
-  const user_email = core.getInput("commit_user_email");
-
-  console.log(github.context);
-  const ref = github.context.payload.pull_request?.head.ref || github.context.payload.ref;
-  if (!ref) {
-    throw new Error("No ref found");
-  }
-
-  try {
-    await exec.exec("git", ["diff", "--exit-code", "--output", "/dev/null", "--", options.file]);
-    console.log("No changes to commit");
-    return;
-  } catch (error) {
-    // Found changes to commit
-  }
-
-  await exec.exec("git", ["config", "user.name", user_name]);
-  await exec.exec("git", ["config", "user.email", user_email]);
-  await exec.exec("git", ["commit", "-m", message, options.file]);
-  await exec.exec("git", ["push", "origin", `HEAD:${ref}`]);
-
-  console.log("Done");
-  core.endGroup();
-}
-
 function handlePullRequest(options) {
   const title = github.context.payload.pull_request.title;
 
@@ -151,10 +119,6 @@ try {
     default:
       core.setFailed(`Invalid action: ${action}`);
       break;
-  }
-
-  if (core.getBooleanInput("commit")) {
-    pushChanges(options);
   }
 } catch (error) {
   core.setFailed(error.message);
