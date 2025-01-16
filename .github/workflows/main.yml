@@ -16,7 +16,7 @@ jobs:
         with:
           ref: ${{ github.head_ref }}
       - name: Manage changelog
-        uses: TheoBrigitte/test@81a705746b37aa3806b8886a69b5867fe62a4294
+        uses: TheoBrigitte/test@f6b80a5e49fdba0a9e5b0a3e85b25ede539ff4e8
         with:
           fmt_write: true
       - uses: stefanzweifel/git-auto-commit-action@v5
