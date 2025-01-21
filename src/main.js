@@ -31,8 +31,8 @@ export function cmd() {
 
   // Define the main program
   program
-    .name("changelog-manager")
-    .description("Manage changelog files")
+    .name("changelog-parser")
+    .description("A command-line tool to parse and manipulate changelog files")
     .version("0.1.0")
 
   // Define commands
