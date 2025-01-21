@@ -4,7 +4,7 @@ import { add } from "./add.js";
 import { fmt } from "./fmt.js";
 import { init } from "./init.js";
 import { list } from "./list.js";
-import { merge, mergeMultiple } from "./merge.js";
+import { merge } from "./merge.js";
 import { release } from "./release.js";
 import { show } from "./show.js";
 
@@ -76,18 +76,11 @@ export function cmd() {
 
   program
     .command("merge")
-    .description("Merge changes from source changelog")
-    .argument("<source>", "Source changelog file path. It can contain a release version, latest or unreleased keyword to select the release to be merged.  e.g. source@1.0.0, if not specified latest is used")
+    .summary("Merge changes from one or multiple changelog file(s)")
+    .argument("<sources...>", "Source changelog file(s). Each source can contain a release version, latest or unreleased keyword to select the release to be merged.  e.g. source@1.0.0, if not specified latest is used")
     .option("-n, --number <number>", "Number of additional older release(s) to merge from source, use -1 for all", parseIntArg, 0)
     .option("-v, --version <version>", "Release version to merge into (default: unreleased)")
     .action(merge);
-
-  program
-    .command("merge-multiple")
-    .summary("Merge changes from multiple changelog files into unreleased changes")
-    .argument("<sources...>", "Multiple source changelog files. Using same format as merge command")
-    .option("-v, --version <version>", "Release version to merge into (default: unreleased)")
-    .action(mergeMultiple);
 
   program
     .command("release")

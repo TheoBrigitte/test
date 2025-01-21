@@ -1,11 +1,11 @@
 import { parser } from "keep-a-changelog";
 import fs from "fs";
 
-// Merge changes from multiple source changelog files.
-export function mergeMultiple(sources, options) {
+// Merge changes from source changelog(s).
+export function merge(sources, options) {
   sources.forEach((source) => {
     try {
-      merge(source, options);
+      mergeSingle(source, options);
       console.log(`Merged ${source}`);
     } catch (error) {
       console.error(`Failed ${source}: ${error.message}`);
@@ -14,7 +14,7 @@ export function mergeMultiple(sources, options) {
 }
 
 // Merges changes from source changelog.
-export function merge(source, options) {
+export function mergeSingle(source, options) {
   const s = source.split("@");
   const sourceFile = s[0];
   const sourceRelease = s[1]?.replace(/^v/, "") || "latest";
