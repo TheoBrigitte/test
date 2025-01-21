@@ -34,10 +34,9 @@ export function merge(source, options) {
   }
 
   // Find destination release in destination changelog
-  const destinationVersion = options.into == "unreleased" ? undefined : options.into;
-  const destinationRelease = destinationChangelog.findRelease(destinationVersion);
+  const destinationRelease = destinationChangelog.findRelease(options.version);
   if (!destinationRelease) {
-    throw new Error(`${destinationVersion} release not found`);
+    throw new Error(`${options.version} release not found`);
   }
 
   // Merge changes from source to destination changelog

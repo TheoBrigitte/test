@@ -1,8 +1,8 @@
 import { parser } from "keep-a-changelog";
 import fs from "fs";
 
-// Initialize a new changelog file
-export function listReleases(options) {
+// List all releases in the changelog file
+export function list(options) {
   // Read changelog file
   const changelog = parser(fs.readFileSync(options.file, options.encoding));
   changelog.sortReleases();

@@ -3,9 +3,10 @@ import { Release } from "keep-a-changelog";
 import { add } from "./add.js";
 import { fmt } from "./fmt.js";
 import { init } from "./init.js";
-import { listReleases } from "./list.js";
+import { list } from "./list.js";
 import { merge, mergeMultiple } from "./merge.js";
 import { release } from "./release.js";
+import { show } from "./show.js";
 
 export function cmd() {
   class rootCommand extends Command {
@@ -43,6 +44,7 @@ export function cmd() {
     .argument("<title>", "Change title")
     .argument("[description]", "Change description", "")
     .option("-t, --type <type>", `Change type (allowed values: ${changeTypes})`, "added")
+    .option("-v, --version <version>", "Release version to add changes to (default: unreleased)")
     .action(add);
 
   program
@@ -62,22 +64,29 @@ export function cmd() {
     .action(init);
 
   program
-    .command("list-releases")
+    .command("list")
     .description("List releases in the changelog")
-    .action(listReleases);
+    .action(list);
+
+  program
+    .command("show")
+    .description("Show a release and its changes")
+    .argument("<version>", "Release version, latest or unreleased")
+    .action(show);
 
   program
     .command("merge")
     .description("Merge changes from source changelog")
     .argument("<source>", "Source changelog file path. It can contain a release version, latest or unreleased keyword to select the release to be merged.  e.g. source@1.0.0, if not specified latest is used")
     .option("-n, --number <number>", "Number of additional older release(s) to merge from source, use -1 for all", parseIntArg, 0)
-    .option("-i, --into <into>", "Destination release to merge into", "unreleased")
+    .option("-v, --version <version>", "Release version to merge into (default: unreleased)")
     .action(merge);
 
   program
     .command("merge-multiple")
     .summary("Merge changes from multiple changelog files into unreleased changes")
     .argument("<sources...>", "Multiple source changelog files. Using same format as merge command")
+    .option("-v, --version <version>", "Release version to merge into (default: unreleased)")
     .action(mergeMultiple);
 
   program
