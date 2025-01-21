@@ -1,7 +1,7 @@
 import { parser } from "keep-a-changelog";
 import fs from "fs";
 
-// Merge multiple source changelog files into a changelog unreleased changes
+// Merge changes from multiple source changelog files.
 export function mergeMultiple(sources, options) {
   sources.forEach((source) => {
     try {
@@ -13,7 +13,7 @@ export function mergeMultiple(sources, options) {
   });
 }
 
-// Merges changes from source changelog into changelog's unreleased changes.
+// Merges changes from source changelog.
 export function merge(source, options) {
   const s = source.split("@");
   const sourceFile = s[0];
@@ -33,13 +33,17 @@ export function merge(source, options) {
     throw new Error(`no changes found`);
   }
 
-  // Find unreleased changes in destination changelog
-  const unreleased = destinationChangelog.findRelease();
+  // Find destination release in destination changelog
+  const destinationVersion = options.into == "unreleased" ? undefined : options.into;
+  const destinationRelease = destinationChangelog.findRelease(destinationVersion);
+  if (!destinationRelease) {
+    throw new Error(`${destinationVersion} release not found`);
+  }
 
-  // Merge changes from source to destination changelog unreleased
+  // Merge changes from source to destination changelog
   changesByCategories.forEach((changes, type) => {
     changes.forEach((change) => {
-      unreleased.addChange(type, change);
+      destinationRelease.addChange(type, change);
     });
   });
 

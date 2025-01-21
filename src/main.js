@@ -58,7 +58,7 @@ export function cmd() {
     .option("--title <title>", "Changelog title", "Changelog")
     .option("--description <description>", "Changelog description")
     .option("--url <url>", "Changelog URL", "https://example.com")
-    .option("--initial-version <initial-version>", "Initial release version. Set to '' to skip initial release creation, note that compare links section will not be initialized in this case.", "0.1.0")
+    .option("--initial-version <initial-version>", "Initial release version. Set to '' to skip initial release creation, note that compare links section will not be initialized in this case", "0.1.0")
     .action(init);
 
   program
@@ -68,9 +68,10 @@ export function cmd() {
 
   program
     .command("merge")
-    .description("Merge changes from source changelog into unreleased changes")
-    .argument("<source>", "Source changelog file path. It can contain a release version, latest or unreleased keyword, to select the release to be merged.  e.g. source@1.0.0, if not specified latest is used")
-    .option("-n, --number <number>", "Number of additional older release(s) to merge from source, use -1 for all.", parseIntArg, 0)
+    .description("Merge changes from source changelog")
+    .argument("<source>", "Source changelog file path. It can contain a release version, latest or unreleased keyword to select the release to be merged.  e.g. source@1.0.0, if not specified latest is used")
+    .option("-n, --number <number>", "Number of additional older release(s) to merge from source, use -1 for all", parseIntArg, 0)
+    .option("-i, --into <into>", "Destination release to merge into", "unreleased")
     .action(merge);
 
   program
