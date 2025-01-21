@@ -7,7 +7,7 @@ export function release(version, options) {
 
   const exists = changelog.findRelease(version);
   if (exists) {
-    throw new Error(`version ${version} already exists`);
+    throw new Error(`release ${version} already exists`);
   }
 
   const unreleased = changelog.findRelease();

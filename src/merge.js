@@ -36,7 +36,7 @@ export function merge(source, options) {
   // Find destination release in destination changelog
   const destinationRelease = destinationChangelog.findRelease(options.version);
   if (!destinationRelease) {
-    throw new Error(`${options.version} release not found`);
+    throw new Error(`release ${options.version} not found`);
   }
 
   // Merge changes from source to destination changelog
