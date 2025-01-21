@@ -15,7 +15,7 @@ export function release(version, options) {
     throw new Error(`no unreleased changes`);
   }
 
-  unreleased.setDate(new Date());
+  unreleased.setDate(options.date);
   unreleased.setVersion(version);
 
   changelog.addRelease(new Release());

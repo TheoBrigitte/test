@@ -93,6 +93,7 @@ export function cmd() {
     .command("release")
     .description("Release the unreleased changes")
     .argument("<version>", "Release version")
+    .option("-d, --date <date>", "Release date", new Date())
     .action(release);
 
   return program;
