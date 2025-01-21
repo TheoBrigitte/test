@@ -1,4 +1,4 @@
-import { Command } from "commander";
+import { Command, InvalidArgumentError } from "commander";
 import { Release } from "keep-a-changelog";
 import { add } from "./add.js";
 import { fmt } from "./fmt.js";
@@ -17,6 +17,14 @@ export function cmd() {
       cmd.option("--encoding <encoding>", "Encoding format of the changelog file", "UTF-8");
       return cmd;
     }
+  }
+
+  const parseIntArg = (value) => {
+    const parsedValue = parseInt(value, 10);
+    if (isNaN(parsedValue)) {
+      throw new InvalidArgumentError('Not a number.');
+    }
+    return parsedValue;
   }
 
   const program = new rootCommand();
@@ -61,7 +69,8 @@ export function cmd() {
   program
     .command("merge")
     .description("Merge changes from source changelog into unreleased changes")
-    .argument("<source>", "Source changelog file. Can contain a version to start merging from until latest release, e.g. source@1.0.0, if not specified, only latest release will be used")
+    .argument("<source>", "Source changelog file path. It can contain a release version, latest or unreleased keyword, to select the release to be merged.  e.g. source@1.0.0, if not specified latest is used")
+    .option("-n, --number <number>", "Number of additional older release(s) to merge from source, use -1 for all.", parseIntArg, 0)
     .action(merge);
 
   program

@@ -17,7 +17,7 @@ export function mergeMultiple(sources, options) {
 export function merge(source, options) {
   const s = source.split("@");
   const sourceFile = s[0];
-  const fromRelease = s[1]?.replace(/^v/, "");
+  const sourceRelease = s[1]?.replace(/^v/, "") || "latest";
 
   // Read and parse changelog files
   const sourceChangelog = parser(fs.readFileSync(sourceFile, options.encoding));
@@ -27,17 +27,8 @@ export function merge(source, options) {
   sourceChangelog.format = options.format;
   destinationChangelog.format = options.format;
 
-  let changesByCategories;
-  if (fromRelease) {
-    // Find all changes from source changelog from a specific release
-    changesByCategories = changesFromRelease(sourceChangelog, fromRelease);
-  } else {
-    // Find latest release changes in source changelog
-    changesByCategories = sourceChangelog.releases.find((release) =>
-      release.date && release.version
-    ).changes;
-  }
-
+  // Get changes from sourceChangelog
+  const changesByCategories = changesFromRelease(sourceChangelog, sourceRelease, options);
   if (!changesByCategories || changesByCategories.size === 0) {
     throw new Error(`no changes found`);
   }
@@ -45,7 +36,7 @@ export function merge(source, options) {
   // Find unreleased changes in destination changelog
   const unreleased = destinationChangelog.findRelease();
 
-  // Merge changes from source latest release to destination unreleased
+  // Merge changes from source to destination changelog unreleased
   changesByCategories.forEach((changes, type) => {
     changes.forEach((change) => {
       unreleased.addChange(type, change);
@@ -56,27 +47,40 @@ export function merge(source, options) {
   fs.writeFileSync(options.file, destinationChangelog.toString());
 }
 
-// Get all changes from source changelog from a specific release up to the latest release
-export function changesFromRelease(sourceChangelog, fromRelease) {
+// Get changes from source changelog starting at sourceRelease up to the number of releases specified in options.number
+export function changesFromRelease(sourceChangelog, sourceRelease, options) {
   // Ensure releases are sorted
   sourceChangelog.sortReleases();
 
-  // Find index of fromRelease in source changelog releases
-  const fromReleaseIndex = sourceChangelog.releases.findIndex((release) =>
-    release.version === fromRelease
-  );
+  // Find start index according to sourceRelease
+  let startIndex;
+  switch (sourceRelease) {
+    case "latest":
+      startIndex = sourceChangelog.releases.findIndex((release) =>
+        release.date && release.version
+      );
+      break;
+    case "unreleased":
+      startIndex = sourceChangelog.releases.findIndex((release) =>
+        !release.version
+      );
+      break;
+    default:
+      startIndex = sourceChangelog.releases.findIndex((release) =>
+        release.date && release.version === sourceRelease
+      );
+  }
 
-  // Find index of latest release in source changelog releases
-  // this is to ensure that we only get changes up to the latest release
-  // and not any unreleased changes
-  const latestIndex = sourceChangelog.releases.findIndex((release) =>
-    release.date && release.version
-  );
+  // Compute end index according to options.number
+  let endIndex = startIndex + options.number;
+  if (options.number < 0) {
+    // Set endIndex to oldest release if number is negative
+    endIndex = sourceChangelog.releases.length - 1;
+  }
 
-  // Get all changes from source changelog from fromRelease up to the latest release
-  // ordered by latest changes first
+  // Collect changes from startIndex up to endIndex ordered by latest changes first
   let changes = new Map();
-  for (let i = latestIndex; i <= fromReleaseIndex; i++) {
+  for (let i = startIndex; i <= endIndex; i++) {
     const release = sourceChangelog.releases[i];
     release.changes.forEach((change, type) => {
       if (!changes.has(type)) {
